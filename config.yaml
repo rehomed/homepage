@@ -2,7 +2,7 @@ default_page: /home # custom page or absolute url
 
 pages:
   - title: Home
-    # path: /home
+    path: /home
     # inject:
     #   css:
     #   html:
@@ -18,7 +18,7 @@ pages:
     #      some_key: some_value
     
     links:
-      - title:
+      - title: 
         icon: # favicon if unset
         url: 
         # status_url:

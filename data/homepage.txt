@@ -1,0 +1,14 @@
+            _                              _ 
+           | |                            | |
+   _ __ ___| |__   ___  _ __ ___   ___  __| |
+  | '__/ _ \ '_ \ / _ \| '_ ` _ \ / _ \/ _` |
+  | | |  __/ | | | (_) | | | | | |  __/ (_| |
+  |_|  \___|_| |_|\___/|_| |_| |_|\___|\__,_|
+
+   you've hit a rehomed instance, but the
+   administrator of this instance hasn't set
+   a `default_page`
+
+***********************************************
+
+Learn more: https://github.com/rehomed/homepage

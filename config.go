@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
+
+var config Configuration
 
 type Configuration struct {
 	DefaultPage string              `yaml:"default_page"`
@@ -16,24 +19,24 @@ type Configuration struct {
 }
 
 type ConfigurationPage struct {
-	Title   string                    `yaml:"title"`   // page title
-	Path    string                    `yaml:"path"`    // the pathname of the page (prefixed with /)
-	Inject  ConfigurationPageInject   `yaml:"inject"`  // content to inject to the page
-	Search  ConfigurationPageSearch   `yaml:"search"`  // search engine config
-	Widgets []ConfigurationPageWidget `yaml:"widgets"` // widgets injected in the page
-	Links   []ConfigurationPageLink   `yaml:"links"`
+	Title   string                    `yaml:"title" json:"title"`     // page title
+	Path    string                    `yaml:"path" json:"path"`       // the pathname of the page (prefixed with /)
+	Inject  ConfigurationPageInject   `yaml:"inject" json:"inject"`   // content to inject to the page
+	Search  ConfigurationPageSearch   `yaml:"search" json:"search"`   // search engine config
+	Widgets []ConfigurationPageWidget `yaml:"widgets" json:"widgets"` // widgets injected in the page
+	Links   []ConfigurationPageLink   `yaml:"links" json:"links"`
 }
 
 type ConfigurationPageInject struct {
-	CSS        string `yaml:"css"`
-	HTML       string `yaml:"html"`
-	JavaScript string `yaml:"js"`
+	CSS        string `yaml:"css" json:"css"`
+	HTML       string `yaml:"html" json:"html"`
+	JavaScript string `yaml:"js" json:"js"`
 }
 
 type ConfigurationPageSearch struct {
-	Enabled bool `yaml:"enabled"` // whether to show the search bar
-	Label   bool `yaml:"label"`   // "Search with [label]" as search bar placeholder
-	URL     bool `yaml:"url"`     // the placeholder URL for the service (i.e https://google.com/search?q=%s)
+	Enabled bool `yaml:"enabled" json:"enabled"` // whether to show the search bar
+	Label   bool `yaml:"label" json:"label"`     // "Search with [label]" as search bar placeholder
+	URL     bool `yaml:"url" json:"url"`         // the placeholder URL for the service (i.e https://google.com/search?q=%s)
 }
 
 type ConfigurationPageWidget struct {
@@ -43,9 +46,9 @@ type ConfigurationPageWidget struct {
 }
 
 type ConfigurationPageLink struct {
-	Title string `yaml:"title"`
-	Icon  string `yaml:"icon"`
-	URL   string `yaml:"url"`
+	Title string `yaml:"title" json:"title"`
+	Icon  string `yaml:"icon" json:"icon"`
+	URL   string `yaml:"url" json:"url"`
 	// StatusURL TODO!!
 }
 
@@ -57,49 +60,90 @@ func init() {
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatal("failed to get cwd:", err)
+		slog.Error("failed to get cwd", "err", err)
+		os.Exit(1)
 	}
 
-	// test/validate env config
+	// data path
 	dataPath := os.Getenv("DATA_PATH")
 	if dataPath == "" {
 		dataPath = cwd + "/data"
-		fmt.Printf("WARNING: DATA_PATH is unset. Using %q (default)\n", dataPath)
+		slog.Warn(fmt.Sprintf("DATA_PATH is unset. Using %q (default)", dataPath))
+
 		os.Setenv("DATA_PATH", dataPath)
 	}
 
+	slog.Debug("using data path", "name", dataPath)
+
 	_, err = os.Stat(dataPath)
 	if os.IsNotExist(err) {
-		fmt.Printf("WARNING: DATA_PATH is missing. Creating it now... (%q)\n", dataPath)
+		slog.Warn("DATA_PATH is missing. Creating it now...", "name", dataPath)
 
 		err = os.MkdirAll(dataPath, 0770)
 		if err != nil {
-			log.Fatal("failed creating data directory:", dataPath, err)
+			slog.Error("failed creating data directory:", "err", err)
+			os.Exit(1)
 		}
+	}
+
+	// http listener
+	port := os.Getenv("PORT")
+	if port == "" {
+		slog.Debug("PORT is unset, defaulting to 8080")
+		port = "8080"
+		os.Setenv("PORT", port)
+	}
+
+	listen := os.Getenv("LISTEN")
+	if listen == "" {
+		listen = "0.0.0.0:" + port
+		os.Setenv("LISTEN", listen)
+		slog.Debug("overriding LISTEN to", "val", listen, "why", "unset")
+	} else if !strings.Contains(listen, ":") {
+		listen += ":" + port
+		os.Setenv("LISTEN", listen)
+		slog.Debug("overriding LISTEN to", "val", listen, "why", "no port in value")
 	}
 
 	// config data
 	configContent := os.Getenv("CONFIG")
 	configFile := os.Getenv("CONFIG_FILE")
 	if configContent == "" && configFile == "" {
-		log.Fatal("unable to start: no config found (variable CONFIG or CONFIG_FILE)")
+		slog.Error("unable to start: no config found (variable CONFIG or CONFIG_FILE)")
+		os.Exit(1)
 	}
 
 	if configContent == "" && configFile != "" {
+		slog.Debug("loading config from file", "name", configFile)
 		configFileData, err := os.ReadFile(configFile)
 		if err != nil {
-			log.Fatal("unable to start: config unreadable:", err)
+			slog.Error("unable to start: config unreadable:", "err", err)
+			os.Exit(1)
 		}
 
 		configContent = string(configFileData)
+	} else {
+		slog.Debug("loading config from env")
 	}
 
-	// config parsing
-	var config Configuration
-	err = yaml.Unmarshal([]byte(configContent), &config)
+	// cfg parsing
+	var cfg Configuration
+	err = yaml.Unmarshal([]byte(configContent), &cfg)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		slog.Error("failed unmarshaling config yaml", "err", err)
+		os.Exit(1)
 	}
 
-	spew.Dump(config)
+	spew.Dump(cfg)
+	config = cfg
+}
+
+func resolvePage(path string, cfg Configuration) *ConfigurationPage {
+	for _, p := range cfg.Pages {
+		if p.Path == path {
+			return &p
+		}
+	}
+
+	return nil
 }
