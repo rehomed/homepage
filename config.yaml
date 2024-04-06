@@ -1,0 +1,24 @@
+default_page: /home # custom page or absolute url
+
+pages:
+  - title: Home
+    # path: /home
+    # inject:
+    #   css:
+    #   html:
+    #   js:
+    #search:
+    #  enabled: true
+    #  label: DuckDuckGo
+    #  url: https://duckduckgo.com/search?q=%s
+    #widgets: #live in html files, injected as iframe
+    #  - builtin: host_cpu
+    #  - inject: /some/file.html
+    #    kv:
+    #      some_key: some_value
+    
+    links:
+      - title:
+        icon: # favicon if unset
+        url: 
+        # status_url:
