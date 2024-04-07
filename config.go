@@ -40,9 +40,8 @@ type ConfigurationPageSearch struct {
 }
 
 type ConfigurationPageWidget struct {
-	Bultin string            `yaml:"builtin"` // ID of built-in widget
-	Inject string            `yaml:"inject"`  // HTML metadata to inject
-	KV     map[string]string // extra data passed in query params
+	// Bultin string            `yaml:"builtin"` // ID of built-in widget
+	Inject string `yaml:"inject" json:"inject"` // HTML url to inject
 }
 
 type ConfigurationPageLink struct {

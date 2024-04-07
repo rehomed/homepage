@@ -1,4 +1,4 @@
-import { JSX, VNode } from "preact";
+import { VNode } from "preact";
 import {
   ConfigurationPageLink,
   ConfigurationPageSearch,
@@ -121,17 +121,14 @@ function Link({
 }
 
 function Widget({ config }: { config?: ConfigurationPageWidget }) {
-  const [isLoading, setLoading] = useState(true);
   if (!config) return null;
 
   return (
     <>
-      {isLoading && <div className="w-full h-full skeleton"></div>}
       <iframe
         frameborder={0}
         src={config.inject}
-        className={clsx("bg-transparent w-full", isLoading && "hidden")}
-        onLoad={() => setLoading(false)}
+        className={clsx("bg-transparent w-full")}
       ></iframe>
     </>
   );

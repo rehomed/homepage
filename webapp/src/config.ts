@@ -35,7 +35,8 @@ export interface ConfigurationPageLink {
 
 export async function getConfig({ queryKey }: QueryFunctionContext) {
   const path = queryKey[0]
-  const req = await fetch(import.meta.env.VITE_PUBLIC_API_BASE + path + ".json")
+  const apiBase = import.meta.env.VITE_PUBLIC_API_BASE || ""
+  const req = await fetch(apiBase + path + ".json")
 
   if (req.status !== 200) {
     throw new Error(`failed with status ${req.status}: ${await req.text()}`)

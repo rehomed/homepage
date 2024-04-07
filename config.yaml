@@ -10,12 +10,9 @@ pages:
     search:
      enabled: true
      label: DuckDuckGo
-     url: https://duckduckgo.com/search?q=%s
-    #widgets: #live in html files, injected as iframe
-    #  - builtin: host_cpu
-    #  - inject: /some/file.html
-    #    kv:
-    #      some_key: some_value
+     url: https://duckduckgo.com/?q=%s
+    widgets: # injected as iframe
+    #  - inject: http://url.com
     
     links:
       - title: link0
