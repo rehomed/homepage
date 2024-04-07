@@ -4,3 +4,4 @@ export function hexToRGBA(hex: string, opacity: number) {
     ? `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${opacity})`
     : null;
 }
+

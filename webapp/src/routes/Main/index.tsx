@@ -2,12 +2,13 @@ import { JSX, VNode } from "preact";
 import {
   ConfigurationPageLink,
   ConfigurationPageSearch,
+  ConfigurationPageWidget,
   getConfig,
-} from "./config";
+} from "../../config";
 import { useEffect, useState } from "preact/hooks";
 import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
-import { hexToRGBA } from "./util";
+import { hexToRGBA } from "../../util";
 
 function Layout({ children }: { children: VNode[] | VNode }) {
   return (
@@ -36,6 +37,18 @@ function Search({
 
   if (!config || !config.enabled) return null;
 
+  const onKeyDown = (e: KeyboardEvent & { target: HTMLInputElement }) => {
+    if (e.key === "Enter") {
+      const searchURL = String(config.url).replace(/%s/, e?.target?.value);
+
+      if (e.ctrlKey) {
+        window.open(searchURL);
+      } else {
+        window.location.href = searchURL;
+      }
+    }
+  };
+
   return (
     <input
       placeholder={
@@ -43,6 +56,8 @@ function Search({
       }
       className="input input-md bg-zinc-950/25 w-full shadow-xl"
       autoFocus
+      onKeyDown={onKeyDown as (e: KeyboardEvent) => void}
+      id="search"
     ></input>
   );
 }
@@ -80,7 +95,8 @@ function Link({
         className={clsx(
           "border-l-2 bg-gradient-to-r",
           "p-4 w-full h-full",
-          "flex flex-col items-start"
+          "flex flex-col items-start",
+          "hover:scale-[105%] duration-300"
         )}
         style={{
           borderLeft: "2px solid " + color,
@@ -89,7 +105,11 @@ function Link({
       >
         <div className="flex flex-row gap-2 items-center">
           <img
-            src={`https://external-content.duckduckgo.com/ip3/${hostname}.ico`}
+            // TODO get favicons on the server
+            src={
+              config.icon ||
+              `https://external-content.duckduckgo.com/ip3/${hostname}.ico`
+            }
             className="w-6 h-6 shrink-0"
           />
           <h1 className="font-semibold text-lg">{config.title}</h1>
@@ -97,6 +117,23 @@ function Link({
         <h1 className="mt-1 text-xs text-zinc-400">{hostname}</h1>
       </a>
     </div>
+  );
+}
+
+function Widget({ config }: { config?: ConfigurationPageWidget }) {
+  const [isLoading, setLoading] = useState(true);
+  if (!config) return null;
+
+  return (
+    <>
+      {isLoading && <div className="w-full h-full skeleton"></div>}
+      <iframe
+        frameborder={0}
+        src={config.inject}
+        className={clsx("bg-transparent w-full", isLoading && "hidden")}
+        onLoad={() => setLoading(false)}
+      ></iframe>
+    </>
   );
 }
 
@@ -127,7 +164,7 @@ export default function Main() {
             <input type="checkbox" />
             <div className="collapse-title">
               <h2 className="text-lg">{error.message}</h2>
-              <h4 className="text-xs text-zinc-300">click to expand for more details</h4>
+              <h4 className="text-xs text-zinc-300">expand for more details</h4>
             </div>
             <div className="collapse-content">
               <pre className="text-red-400">{error.stack}</pre>
@@ -162,6 +199,11 @@ export default function Main() {
       </div>
       <>
         {/* typescipt screams out in pain about this for some reason */}
+        {data?.widgets
+          ? data.widgets.map((w: ConfigurationPageWidget) => (
+              <Widget config={w} />
+            ))
+          : null}
         {data?.links
           ? data.links.map((l: ConfigurationPageLink) => <Link config={l} />)
           : null}
