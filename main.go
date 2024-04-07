@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 //go:embed data/homepage.txt
@@ -24,6 +25,10 @@ func main() {
 	// log requests in dev mode
 	if os.Getenv("ENV") != "production" {
 		r.Use(middleware.Logger)
+		r.Use(cors.Handler(cors.Options{
+			AllowedOrigins: []string{"*"},
+			AllowedMethods: []string{"GET"},
+		}))
 	}
 
 	// you can't .Mount() things on the same path
@@ -79,6 +84,8 @@ func pagesRouter(r chi.Router) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(j)
 			return
+		} else {
+
 		}
 	})
 }

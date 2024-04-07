@@ -7,10 +7,10 @@ pages:
     #   css:
     #   html:
     #   js:
-    #search:
-    #  enabled: true
-    #  label: DuckDuckGo
-    #  url: https://duckduckgo.com/search?q=%s
+    search:
+     enabled: true
+     label: DuckDuckGo
+     url: https://duckduckgo.com/search?q=%s
     #widgets: #live in html files, injected as iframe
     #  - builtin: host_cpu
     #  - inject: /some/file.html
@@ -18,7 +18,9 @@ pages:
     #      some_key: some_value
     
     links:
-      - title: 
-        icon: # favicon if unset
-        url: 
-        # status_url:
+      - title: link0
+        # icon: # favicon if unset
+        color: "#E26D5C"
+        url: https://ads.google.com
+      - title: link1
+        url: https://google.com

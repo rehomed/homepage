@@ -34,9 +34,9 @@ type ConfigurationPageInject struct {
 }
 
 type ConfigurationPageSearch struct {
-	Enabled bool `yaml:"enabled" json:"enabled"` // whether to show the search bar
-	Label   bool `yaml:"label" json:"label"`     // "Search with [label]" as search bar placeholder
-	URL     bool `yaml:"url" json:"url"`         // the placeholder URL for the service (i.e https://google.com/search?q=%s)
+	Enabled bool   `yaml:"enabled" json:"enabled"` // whether to show the search bar
+	Label   string `yaml:"label" json:"label"`     // "Search with [label]" as search bar placeholder
+	URL     string `yaml:"url" json:"url"`         // the placeholder URL for the service (i.e https://google.com/search?q=%s)
 }
 
 type ConfigurationPageWidget struct {
@@ -47,6 +47,7 @@ type ConfigurationPageWidget struct {
 
 type ConfigurationPageLink struct {
 	Title string `yaml:"title" json:"title"`
+	Color string `yaml:"color" json:"color"`
 	Icon  string `yaml:"icon" json:"icon"`
 	URL   string `yaml:"url" json:"url"`
 	// StatusURL TODO!!
