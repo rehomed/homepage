@@ -3,21 +3,43 @@ default_page: /home # custom page or absolute url
 pages:
   - title: Home
     path: /home
+
     # inject:
     #   css:
     #   html:
     #   js:
+
     search:
      enabled: true
      label: DuckDuckGo
      url: https://duckduckgo.com/?q=%s
+
     widgets: # injected as iframe
     #  - inject: http://url.com
-    
+
     links:
-      - title: link0
+      - title: Bitwarden
         # icon: # favicon if unset
-        color: "#E26D5C"
-        url: https://ads.google.com
-      - title: link1
+        color: "#175DDC"
+        url: https://vault.bitwarden.com
+
+      - title: Immich
+        color: "#ACCAFA"
+        icon: https://immich.app/img/immich-logo.svg
+        url: https://immich.app
+
+      - title: Roundcube
+        color: "#81CDF3"
+        url: https://roundcube.net
+
+      - title: Mealie
+        color: "#E58224"
+        url: https://mealie.io/
+
+      - title: Forgejo
+        color: "#A04D11"
+        url: https://forgejo.org
+
+      - title: something w/ custom icon
+        icon: https://picsum.photos/50/50
         url: https://google.com
