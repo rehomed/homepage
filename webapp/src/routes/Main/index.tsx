@@ -12,8 +12,8 @@ import { hexToRGBA } from "../../util";
 
 function Layout({ children }: { children: VNode[] | VNode }) {
   return (
-    <div className="w-screen h-screen flex flex-col items-center">
-      <div className="max-w-2xl w-full grid grid-cols-2 gap-4 mt-4">
+    <div className="w-screen h-screen flex flex-col items-center px-2 md:p-0">
+      <div className="max-w-2xl w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {children}
       </div>
     </div>
@@ -152,7 +152,7 @@ export default function Main() {
       <Layout>
         <div
           className={clsx(
-            "p-4 col-span-2  overflow-x-scroll",
+            "p-4 md:col-span-2  overflow-x-scroll",
             "bg-red-950/10 border-l-2 border-l-red-200/50"
           )}
         >
@@ -175,7 +175,7 @@ export default function Main() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="col-span-2 w-full">
+        <div className="md:col-span-2 w-full">
           <Search isSkeleton />
         </div>
         {/* this is stupid. idc. */}
@@ -191,7 +191,7 @@ export default function Main() {
 
   return (
     <Layout>
-      <div className="col-span-2 w-full">
+      <div className="md:col-span-2 w-full">
         <Search config={data?.search} />
       </div>
       <>
